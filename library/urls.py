@@ -2,5 +2,5 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # Маршруты добавим в Задании 5
+    path('', views.books_list, name='books_list'),
 ]
