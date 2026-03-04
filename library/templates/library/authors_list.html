@@ -1,0 +1,39 @@
+{% extends "library/base.html" %}
+
+{% block title %}Авторы — Библиотека{% endblock %}
+
+{% block content %}
+<h1>Авторы</h1>
+<p class="subtitle">Всего: {{ authors|length }}</p>
+<input type="text" class="search-box" id="search" placeholder="Поиск по имени или стране..." autocomplete="off">
+
+<div id="authors-list">
+    {% for author in authors %}
+    <div class="card" style="animation-delay: {{ forloop.counter0 }}00ms" data-search="{{ author.first_name|lower }} {{ author.last_name|lower }} {{ author.country|default:'—'|lower }}">
+        <div class="card-title">{{ author.first_name }} {{ author.last_name }}</div>
+        <div class="card-detail">{{ author.country|default:"—" }} &middot; {{ author.birth_year|default:"—" }} г.</div>
+        {% if author.books.exists %}
+        <div class="card-genres" style="margin-top: 0.6rem;">
+            {% for book in author.books.all %}
+            <span class="badge">{{ book.title }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% empty %}
+    <div class="empty-state">Авторов пока нет.</div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('search').addEventListener('input', function() {
+    const q = this.value.toLowerCase().trim();
+    document.querySelectorAll('#authors-list .card').forEach(function(card) {
+        const text = card.getAttribute('data-search');
+        card.classList.toggle('hidden', q && !text.includes(q));
+    });
+});
+</script>
+{% endblock %}

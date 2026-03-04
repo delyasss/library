@@ -1,0 +1,47 @@
+{% extends "library/base.html" %}
+
+{% block title %}Читатели — Библиотека{% endblock %}
+
+{% block content %}
+<h1>Читатели</h1>
+<p class="subtitle">Всего: {{ readers|length }}</p>
+<input type="text" class="search-box" id="search" placeholder="Поиск по имени или email..." autocomplete="off">
+
+<div id="readers-list" class="profile-grid">
+    {% for reader in readers %}
+    <div class="card" style="animation-delay: {{ forloop.counter0 }}00ms" data-search="{{ reader.first_name|lower }} {{ reader.last_name|lower }} {{ reader.email|lower }}">
+        <div class="card-title">{{ reader.first_name }} {{ reader.last_name }}</div>
+        <div class="card-email">{{ reader.email }}</div>
+        {% if reader.profile %}
+        <div class="card-detail">
+            {% if reader.profile.phone %}{{ reader.profile.phone }}{% endif %}
+            {% if reader.profile.address %} &middot; {{ reader.profile.address }}{% endif %}
+        </div>
+        {% endif %}
+        {% if reader.loans.exists %}
+        <div class="card-genres" style="margin-top: 0.6rem;">
+            {% for loan in reader.loans.all %}
+            <span class="badge {% if loan.returned %}stock-yes{% else %}stock-no{% endif %}">
+                {{ loan.book.title }}
+            </span>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% empty %}
+    <div class="empty-state">Читателей пока нет.</div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('search').addEventListener('input', function() {
+    const q = this.value.toLowerCase().trim();
+    document.querySelectorAll('#readers-list .card').forEach(function(card) {
+        const text = card.getAttribute('data-search');
+        card.classList.toggle('hidden', q && !text.includes(q));
+    });
+});
+</script>
+{% endblock %}

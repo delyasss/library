@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Библиотека{% endblock %}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        nav {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        nav .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #a78bfa;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        nav .links {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        nav .links a {
+            color: #c4b5fd;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        nav .links a:hover, nav .links a.active {
+            background: rgba(167, 139, 250, 0.2);
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #c4b5fd;
+            margin-bottom: 0.5rem;
+            animation: fadeDown 0.6s ease;
+        }
+
+        .subtitle {
+            color: #8b8b9e;
+            margin-bottom: 1.5rem;
+            animation: fadeDown 0.6s ease 0.1s both;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 0.75rem 1.25rem;
+            border: 1px solid rgba(167, 139, 250, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #e0e0e0;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            outline: none;
+            transition: all 0.3s ease;
+            animation: fadeDown 0.6s ease 0.2s both;
+        }
+
+        .search-box:focus {
+            border-color: #a78bfa;
+            box-shadow: 0 0 20px rgba(167, 139, 250, 0.15);
+        }
+
+        .search-box::placeholder { color: #6b6b80; }
+
+        .card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.35s ease;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .card:hover {
+            background: rgba(167, 139, 250, 0.08);
+            border-color: rgba(167, 139, 250, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #e8e0ff;
+            margin-bottom: 0.35rem;
+        }
+
+        .card-author { color: #a78bfa; font-size: 0.95rem; }
+
+        .card-genres {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.5rem;
+        }
+
+        .badge {
+            background: rgba(167, 139, 250, 0.15);
+            color: #c4b5fd;
+            padding: 0.2rem 0.65rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.6rem;
+            font-size: 0.85rem;
+            color: #8b8b9e;
+        }
+
+        .card-meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+        .stock-yes { color: #4ade80; }
+        .stock-no { color: #f87171; }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6b6b80;
+            font-size: 1.1rem;
+        }
+
+        .hidden { display: none !important; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .profile-grid .card { margin-bottom: 0; }
+
+        .card-email { color: #8b8b9e; font-size: 0.9rem; margin-top: 0.2rem; }
+        .card-detail { color: #8b8b9e; font-size: 0.9rem; margin-top: 0.15rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a class="logo" href="{% url 'books_list' %}">БИБЛИОТЕКА</a>
+        <div class="links">
+            <a href="{% url 'books_list' %}" class="{% if request.resolver_match.url_name == 'books_list' %}active{% endif %}">Книги</a>
+            <a href="{% url 'authors_list' %}" class="{% if request.resolver_match.url_name == 'authors_list' %}active{% endif %}">Авторы</a>
+            <a href="{% url 'readers_list' %}" class="{% if request.resolver_match.url_name == 'readers_list' %}active{% endif %}">Читатели</a>
+        </div>
+    </nav>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

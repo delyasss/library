@@ -1,39 +1,47 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Книги — Библиотека</title>
-    <style>
-        body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
-        h1 { color: #333; }
-        ul { list-style: none; padding: 0; }
-        li { border: 1px solid #ddd; padding: 1rem; margin-bottom: 0.5rem; border-radius: 6px; }
-        .author { color: #666; margin-top: 0.25rem; }
-        .genres { font-size: 0.9rem; color: #888; margin-top: 0.25rem; }
-        .meta { font-size: 0.85rem; margin-top: 0.5rem; }
-    </style>
-</head>
-<body>
-    <h1>Книги</h1>
-    <p>Всего: {{ books|length }}</p>
-    <ul>
-        {% for book in books %}
-        <li>
-            <strong>{{ book.title }}</strong>
-            <div class="author">Автор: {{ book.author }}</div>
-            {% if book.genres.exists %}
-            <div class="genres">Жанры: {% for g in book.genres.all %}{{ g.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</div>
-            {% endif %}
-            <div class="meta">
-                Год: {{ book.publication_year|default:"—" }} |
-                Страниц: {{ book.pages|default:"—" }} |
-                Цена: {{ book.price|default:"—" }} ₸ |
-                В наличии: {{ book.in_stock|yesno:"да,нет" }}
-            </div>
-        </li>
-        {% empty %}
-        <li>Книг пока нет. Добавьте через shell или админку.</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends "library/base.html" %}
+
+{% block title %}Книги — Библиотека{% endblock %}
+
+{% block content %}
+<h1>Книги</h1>
+<p class="subtitle">Всего: {{ books|length }}</p>
+<input type="text" class="search-box" id="search" placeholder="Поиск по названию, автору или жанру..." autocomplete="off">
+
+<div id="books-list">
+    {% for book in books %}
+    <div class="card" style="animation-delay: {{ forloop.counter0 }}00ms" data-search="{{ book.title|lower }} {{ book.author|lower }} {% for g in book.genres.all %}{{ g.name|lower }} {% endfor %}">
+        <div class="card-title">{{ book.title }}</div>
+        <div class="card-author">{{ book.author }}</div>
+        {% if book.genres.exists %}
+        <div class="card-genres">
+            {% for g in book.genres.all %}
+            <span class="badge">{{ g.name }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="card-meta">
+            <span>{{ book.publication_year|default:"—" }} г.</span>
+            <span>{{ book.pages|default:"—" }} стр.</span>
+            <span>{{ book.price|default:"—" }} ₸</span>
+            <span class="{% if book.in_stock %}stock-yes{% else %}stock-no{% endif %}">
+                {% if book.in_stock %}В наличии{% else %}Нет в наличии{% endif %}
+            </span>
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">Книг пока нет. Добавьте через shell или админку.</div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('search').addEventListener('input', function() {
+    const q = this.value.toLowerCase().trim();
+    document.querySelectorAll('#books-list .card').forEach(function(card) {
+        const text = card.getAttribute('data-search');
+        card.classList.toggle('hidden', q && !text.includes(q));
+    });
+});
+</script>
+{% endblock %}
