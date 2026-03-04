@@ -9,19 +9,21 @@
 
 <div id="readers-list" class="profile-grid">
     {% for reader in readers %}
-    <a class="card" href="{% url 'reader_detail' reader.pk %}" style="animation-delay: {{ forloop.counter0 }}50ms" data-search="{{ reader.first_name|lower }} {{ reader.last_name|lower }} {{ reader.email|lower }}">
-        <div class="card-title">{{ reader.first_name }} {{ reader.last_name }}</div>
-        <div class="card-email">{{ reader.email }}</div>
-        {% if reader.profile %}
-        <div class="card-detail">
-            {% if reader.profile.address %}{{ reader.profile.address }}{% endif %}
+    <a class="card" href="{% url 'reader_detail' reader.pk %}" style="animation-delay: {{ forloop.counter0 }}50ms; flex-direction: column;" data-search="{{ reader.first_name|lower }} {{ reader.last_name|lower }} {{ reader.email|lower }}">
+        <div class="card-body">
+            <div class="card-title">{{ reader.first_name }} {{ reader.last_name }}</div>
+            <div class="card-email">{{ reader.email }}</div>
+            {% if reader.profile %}
+            <div class="card-detail">
+                {% if reader.profile.address %}{{ reader.profile.address }}{% endif %}
+            </div>
+            {% endif %}
+            {% if reader.loans.exists %}
+            <div class="card-meta" style="margin-top:0.5rem;">
+                <span>{{ reader.loans.count }} выдач</span>
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
-        {% if reader.loans.exists %}
-        <div class="card-meta" style="margin-top:0.5rem;">
-            <span>{{ reader.loans.count }} выдач</span>
-        </div>
-        {% endif %}
     </a>
     {% empty %}
     <div class="empty-state">Читателей пока нет</div>

@@ -88,6 +88,36 @@
             margin-bottom: 2rem;
         }
 
+        /* Счётчики-статистика */
+        .stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #eae8e4;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #aaa;
+            margin-top: 0.3rem;
+        }
+
         .search-box {
             width: 100%;
             padding: 0.85rem 0;
@@ -107,20 +137,63 @@
         .search-box:focus { border-color: #1a1a1a; }
         .search-box::placeholder { color: #bbb; font-weight: 300; }
 
+        /* Карточки книг с обложкой */
         .card {
             border-bottom: 1px solid #eae8e4;
             padding: 1.5rem 0;
             transition: all 0.3s ease;
             cursor: pointer;
-            display: block;
+            display: flex;
+            align-items: flex-start;
+            gap: 1.25rem;
             text-decoration: none;
             color: inherit;
+            position: relative;
             opacity: 0;
             animation: fadeIn 0.5s ease forwards;
         }
 
-        .card:hover { padding-left: 1rem; }
+        .card:hover { padding-left: 0.5rem; }
         .card:last-child { border-bottom: none; }
+
+        /* Стрелка при наведении */
+        .card .arrow {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            color: #ccc;
+        }
+
+        .card:hover .arrow {
+            opacity: 1;
+            right: -0.5rem;
+        }
+
+        /* Обложка-заглушка */
+        .book-cover {
+            width: 52px;
+            min-width: 52px;
+            height: 72px;
+            background: #eae8e4;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #bbb;
+            flex-shrink: 0;
+            transition: background 0.3s;
+        }
+
+        .card:hover .book-cover { background: #ddd8d2; }
+
+        .card-body { flex: 1; min-width: 0; }
 
         .card-title {
             font-family: 'Playfair Display', serif;
@@ -162,7 +235,29 @@
             font-size: 0.8rem;
             font-weight: 300;
             color: #aaa;
+            align-items: center;
         }
+
+        /* Цена выделена */
+        .price-tag {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        /* Цветная точка статуса */
+        .status-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 0.35rem;
+            vertical-align: middle;
+        }
+
+        .status-dot.yes { background: #4a7c59; }
+        .status-dot.no { background: #a05050; }
 
         .stock-yes { color: #4a7c59; }
         .stock-no { color: #a05050; }
@@ -230,6 +325,7 @@
             border: 1px solid #eae8e4;
             border-bottom: 1px solid #eae8e4;
             padding: 1.5rem;
+            flex-direction: column;
         }
 
         .profile-grid .card:hover { padding-left: 1.5rem; border-color: #ccc; }
@@ -274,13 +370,46 @@
             line-height: 1.7;
             font-size: 0.95rem;
         }
+
+        /* Простой карточный лейаут без обложки */
+        .card-simple {
+            border-bottom: 1px solid #eae8e4;
+            padding: 1.5rem 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .card-simple:hover { padding-left: 0.5rem; }
+        .card-simple:last-child { border-bottom: none; }
+
+        .card-simple .arrow {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            color: #ccc;
+        }
+
+        .card-simple:hover .arrow {
+            opacity: 1;
+            right: -0.5rem;
+        }
     </style>
 </head>
 <body>
     <nav>
-        <a class="logo" href="{% url 'books_list' %}">Biblioth&egrave;que</a>
+        <a class="logo" href="{% url 'books_list' %}">БИБЛИОТЕКА</a>
         <div class="links">
-            <a href="{% url 'books_list' %}" class="{% if request.resolver_match.url_name == 'books_list' %}active{% endif %}">Книги</a>
+            <a href="{% url 'books_list' %}" class="{% if request.resolver_match.url_name == 'books_list' or request.resolver_match.url_name == 'book_detail' %}active{% endif %}">Книги</a>
             <a href="{% url 'authors_list' %}" class="{% if request.resolver_match.url_name == 'authors_list' or request.resolver_match.url_name == 'author_detail' %}active{% endif %}">Авторы</a>
             <a href="{% url 'readers_list' %}" class="{% if request.resolver_match.url_name == 'readers_list' or request.resolver_match.url_name == 'reader_detail' %}active{% endif %}">Читатели</a>
         </div>

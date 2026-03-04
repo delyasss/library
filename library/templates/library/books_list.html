@@ -4,29 +4,56 @@
 
 {% block content %}
 <h1>Книги</h1>
-<p class="subtitle">{{ books|length }} изданий в каталоге</p>
+<p class="subtitle">Каталог изданий</p>
+
+<div class="stats">
+    <div class="stat-item">
+        <div class="stat-number">{{ total_books }}</div>
+        <div class="stat-label">Книг</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">{{ total_authors }}</div>
+        <div class="stat-label">Авторов</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">{{ total_readers }}</div>
+        <div class="stat-label">Читателей</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">{{ total_loans }}</div>
+        <div class="stat-label">Выдач</div>
+    </div>
+</div>
+
 <input type="text" class="search-box" id="search" placeholder="Найти по названию, автору или жанру..." autocomplete="off">
 
 <div id="books-list">
     {% for book in books %}
     <a class="card" href="{% url 'book_detail' book.pk %}" style="animation-delay: {{ forloop.counter0 }}50ms" data-search="{{ book.title|lower }} {{ book.author|lower }} {% for g in book.genres.all %}{{ g.name|lower }} {% endfor %}">
-        <div class="card-title">{{ book.title }}</div>
-        <div class="card-author">{{ book.author }}</div>
-        {% if book.genres.exists %}
-        <div class="card-genres">
-            {% for g in book.genres.all %}
-            <span class="badge">{{ g.name }}</span>
-            {% endfor %}
+        <div class="book-cover">{{ book.title|first }}</div>
+        <div class="card-body">
+            <div class="card-title">{{ book.title }}</div>
+            <div class="card-author">{{ book.author }}</div>
+            {% if book.genres.exists %}
+            <div class="card-genres">
+                {% for g in book.genres.all %}
+                <span class="badge">{{ g.name }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div class="card-meta">
+                <span>{{ book.publication_year|default:"—" }}</span>
+                <span>{{ book.pages|default:"—" }} стр.</span>
+                <span class="price-tag">{{ book.price|default:"—" }} ₸</span>
+                <span>
+                    <span class="status-dot {% if book.in_stock %}yes{% else %}no{% endif %}"></span>
+                    <span class="{% if book.in_stock %}stock-yes{% else %}stock-no{% endif %}">
+                        {% if book.in_stock %}В наличии{% else %}Нет{% endif %}
+                    </span>
+                </span>
+            </div>
         </div>
-        {% endif %}
-        <div class="card-meta">
-            <span>{{ book.publication_year|default:"—" }}</span>
-            <span>{{ book.pages|default:"—" }} стр.</span>
-            <span>{{ book.price|default:"—" }} ₸</span>
-            <span class="{% if book.in_stock %}stock-yes{% else %}stock-no{% endif %}">
-                {% if book.in_stock %}В наличии{% else %}Нет в наличии{% endif %}
-            </span>
-        </div>
+        <span class="arrow">&rarr;</span>
     </a>
     {% empty %}
     <div class="empty-state">Каталог пуст</div>

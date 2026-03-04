@@ -1,10 +1,17 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Book, Author, Reader
+from .models import Book, Author, Reader, Loan
 
 
 def books_list(request):
     books = Book.objects.all().select_related('author').prefetch_related('genres')
-    return render(request, 'library/books_list.html', {'books': books})
+    context = {
+        'books': books,
+        'total_books': Book.objects.count(),
+        'total_authors': Author.objects.count(),
+        'total_readers': Reader.objects.count(),
+        'total_loans': Loan.objects.count(),
+    }
+    return render(request, 'library/books_list.html', context)
 
 
 def book_detail(request, pk):
