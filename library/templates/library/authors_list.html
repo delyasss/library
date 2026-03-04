@@ -4,24 +4,22 @@
 
 {% block content %}
 <h1>Авторы</h1>
-<p class="subtitle">Всего: {{ authors|length }}</p>
-<input type="text" class="search-box" id="search" placeholder="Поиск по имени или стране..." autocomplete="off">
+<p class="subtitle">{{ authors|length }} авторов</p>
+<input type="text" class="search-box" id="search" placeholder="Найти по имени или стране..." autocomplete="off">
 
 <div id="authors-list">
     {% for author in authors %}
-    <div class="card" style="animation-delay: {{ forloop.counter0 }}00ms" data-search="{{ author.first_name|lower }} {{ author.last_name|lower }} {{ author.country|default:'—'|lower }}">
+    <a class="card" href="{% url 'author_detail' author.pk %}" style="animation-delay: {{ forloop.counter0 }}50ms" data-search="{{ author.first_name|lower }} {{ author.last_name|lower }} {{ author.country|default:'—'|lower }}">
         <div class="card-title">{{ author.first_name }} {{ author.last_name }}</div>
-        <div class="card-detail">{{ author.country|default:"—" }} &middot; {{ author.birth_year|default:"—" }} г.</div>
+        <div class="card-detail">{{ author.country|default:"—" }} · {{ author.birth_year|default:"—" }}</div>
         {% if author.books.exists %}
-        <div class="card-genres" style="margin-top: 0.6rem;">
-            {% for book in author.books.all %}
-            <span class="badge">{{ book.title }}</span>
-            {% endfor %}
+        <div class="card-meta" style="margin-top:0.5rem;">
+            <span>{{ author.books.count }} {{ author.books.count|pluralize:"книга,книги,книг" }}</span>
         </div>
         {% endif %}
-    </div>
+    </a>
     {% empty %}
-    <div class="empty-state">Авторов пока нет.</div>
+    <div class="empty-state">Авторов пока нет</div>
     {% endfor %}
 </div>
 {% endblock %}
@@ -31,8 +29,7 @@
 document.getElementById('search').addEventListener('input', function() {
     const q = this.value.toLowerCase().trim();
     document.querySelectorAll('#authors-list .card').forEach(function(card) {
-        const text = card.getAttribute('data-search');
-        card.classList.toggle('hidden', q && !text.includes(q));
+        card.classList.toggle('hidden', q && !card.getAttribute('data-search').includes(q));
     });
 });
 </script>

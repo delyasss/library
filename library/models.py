@@ -7,6 +7,7 @@ class Author(models.Model):
     last_name = models.CharField('фамилия', max_length=50)
     birth_year = models.IntegerField('год рождения', null=True, blank=True)
     country = models.CharField('страна', max_length=50, null=True, blank=True)
+    bio = models.TextField('биография', null=True, blank=True)
     created_at = models.DateTimeField('создан', auto_now_add=True)
 
     class Meta:

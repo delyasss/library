@@ -1,0 +1,46 @@
+{% extends "library/base.html" %}
+
+{% block title %}{{ author }} — Библиотека{% endblock %}
+
+{% block content %}
+<a class="back-link" href="{% url 'authors_list' %}">&larr; Все авторы</a>
+
+<h1>{{ author.first_name }} {{ author.last_name }}</h1>
+<p class="subtitle">{{ author.country|default:"—" }} · {{ author.birth_year|default:"—" }}</p>
+
+{% if author.bio %}
+<p class="bio-text">{{ author.bio }}</p>
+{% endif %}
+
+<div class="detail-row">
+    <span class="label">Страна</span>
+    <span class="value">{{ author.country|default:"—" }}</span>
+</div>
+<div class="detail-row">
+    <span class="label">Год рождения</span>
+    <span class="value">{{ author.birth_year|default:"—" }}</span>
+</div>
+<div class="detail-row">
+    <span class="label">Книг в каталоге</span>
+    <span class="value">{{ author.books.count }}</span>
+</div>
+
+{% if author.books.exists %}
+<div class="detail-section">
+    <h2>Произведения</h2>
+    {% for book in author.books.all %}
+    <a class="card" href="{% url 'book_detail' book.pk %}" style="animation-delay: {{ forloop.counter0 }}50ms">
+        <div class="card-title">{{ book.title }}</div>
+        <div class="card-meta">
+            <span>{{ book.publication_year|default:"—" }}</span>
+            <span>{{ book.pages|default:"—" }} стр.</span>
+            <span>{{ book.price|default:"—" }} ₸</span>
+            <span class="{% if book.in_stock %}stock-yes{% else %}stock-no{% endif %}">
+                {% if book.in_stock %}В наличии{% else %}Нет{% endif %}
+            </span>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

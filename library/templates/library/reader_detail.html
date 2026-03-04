@@ -1,0 +1,42 @@
+{% extends "library/base.html" %}
+
+{% block title %}{{ reader }} — Библиотека{% endblock %}
+
+{% block content %}
+<a class="back-link" href="{% url 'readers_list' %}">&larr; Все читатели</a>
+
+<h1>{{ reader.first_name }} {{ reader.last_name }}</h1>
+<p class="subtitle">{{ reader.email }}</p>
+
+<div class="detail-row">
+    <span class="label">Email</span>
+    <span class="value">{{ reader.email }}</span>
+</div>
+{% if reader.profile %}
+<div class="detail-row">
+    <span class="label">Телефон</span>
+    <span class="value">{{ reader.profile.phone|default:"—" }}</span>
+</div>
+<div class="detail-row">
+    <span class="label">Адрес</span>
+    <span class="value">{{ reader.profile.address|default:"—" }}</span>
+</div>
+{% endif %}
+
+{% if reader.loans.exists %}
+<div class="detail-section">
+    <h2>Выданные книги</h2>
+    {% for loan in reader.loans.all %}
+    <div class="loan-item">
+        <div>
+            <a href="{% url 'book_detail' loan.book.pk %}">{{ loan.book.title }}</a>
+            <span style="color:#aaa;font-weight:300;"> — {{ loan.loan_date }}{% if loan.return_date %} → {{ loan.return_date }}{% endif %}</span>
+        </div>
+        <span class="loan-status {% if loan.returned %}stock-yes{% else %}stock-no{% endif %}">
+            {% if loan.returned %}Возвращена{% else %}На руках{% endif %}
+        </span>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

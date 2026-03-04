@@ -1,0 +1,58 @@
+{% extends "library/base.html" %}
+
+{% block title %}{{ book.title }} — Библиотека{% endblock %}
+
+{% block content %}
+<a class="back-link" href="{% url 'books_list' %}">&larr; Все книги</a>
+
+<h1>{{ book.title }}</h1>
+<p class="subtitle">{{ book.author }}</p>
+
+<div class="detail-row">
+    <span class="label">Автор</span>
+    <span class="value"><a href="{% url 'author_detail' book.author.pk %}" style="color:#1a1a1a;text-decoration:none;border-bottom:1px solid #ccc;">{{ book.author }}</a></span>
+</div>
+<div class="detail-row">
+    <span class="label">Год издания</span>
+    <span class="value">{{ book.publication_year|default:"—" }}</span>
+</div>
+<div class="detail-row">
+    <span class="label">Страниц</span>
+    <span class="value">{{ book.pages|default:"—" }}</span>
+</div>
+<div class="detail-row">
+    <span class="label">Цена</span>
+    <span class="value">{{ book.price|default:"—" }} ₸</span>
+</div>
+<div class="detail-row">
+    <span class="label">В наличии</span>
+    <span class="value {% if book.in_stock %}stock-yes{% else %}stock-no{% endif %}">{% if book.in_stock %}Да{% else %}Нет{% endif %}</span>
+</div>
+
+{% if book.genres.exists %}
+<div style="margin-top:1.5rem;">
+    <div class="card-genres">
+        {% for g in book.genres.all %}
+        <span class="badge">{{ g.name }}</span>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if book.loans.exists %}
+<div class="detail-section">
+    <h2>История выдач</h2>
+    {% for loan in book.loans.all %}
+    <div class="loan-item">
+        <div>
+            <a href="{% url 'reader_detail' loan.reader.pk %}">{{ loan.reader }}</a>
+            <span style="color:#aaa;font-weight:300;"> — {{ loan.loan_date }}{% if loan.return_date %} → {{ loan.return_date }}{% endif %}</span>
+        </div>
+        <span class="loan-status {% if loan.returned %}stock-yes{% else %}stock-no{% endif %}">
+            {% if loan.returned %}Возвращена{% else %}На руках{% endif %}
+        </span>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
